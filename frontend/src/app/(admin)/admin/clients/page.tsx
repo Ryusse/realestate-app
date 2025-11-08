@@ -1,3 +1,5 @@
+"use client"
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@src/components/ui/table"
 import { useState } from "react"
 
@@ -8,7 +10,7 @@ type Client = {
 		number: string
 }
 
-export const DataTableClient = () => {
+export default function DataTableClient () {
   let nextId = 0
     const [client, setClient] = useState({
       name: "",
@@ -16,7 +18,7 @@ export const DataTableClient = () => {
       number: ""
     })
     const [clients, setClients] = useState<Client[]>([])
-	
+	{/*  */}
   return <>
 
   {/* Agregar justo aca el dialog o boton para agregar nuevos clientes a la lista */}
