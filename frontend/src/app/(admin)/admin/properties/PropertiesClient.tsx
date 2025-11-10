@@ -12,6 +12,7 @@ import {
   DeletePropertyButton,
   PropertySearchInput,
 } from "@src/modules/properties/components";
+import Link from "next/link";
 
 export function PropertiesClient() {
   const { properties, loading, refetch } = useGetProperties();
@@ -47,7 +48,13 @@ export function PropertiesClient() {
               className="border p-3 rounded flex justify-between items-center"
             >
               <div>
-                <strong>{prop.title}</strong> - ${prop.price}
+                <Link
+                  href={`/admin/properties/${prop.id}`}
+                  className="hover:underline font-semibold"
+                >
+                  {prop.title}
+                </Link>{" "}
+                - ${prop.price}
               </div>
               <div className="flex flex-col md:flex-row px-1 gap-2">
                 <DeletePropertyButton id={prop.id} onDeleted={refetch} />
