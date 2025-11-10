@@ -34,3 +34,23 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  try {
+    const fileData = fs.readFileSync(filePath, "utf-8");
+    const properties = JSON.parse(fileData);
+    const updated = properties.filter((p: any) => p.id !== id);
+    fs.writeFileSync(filePath, JSON.stringify(updated, null, 2));
+    return NextResponse.json({ message: "Property deleted" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Error deleting property" },
+      { status: 500 }
+    );
+  }
+}

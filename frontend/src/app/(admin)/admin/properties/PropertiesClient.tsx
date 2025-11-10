@@ -3,13 +3,18 @@
 import { useGetProperties } from "@src/modules/properties/hook/useGetProperties";
 import { useCreateProperty } from "@src/modules/properties/hook/useCreateProperty";
 import { useUpdateProperty } from "@src/modules/properties/hook/useUpdateProperty";
+import { usePropertySearch } from "@src/modules/properties/hook/usePropertySearch";
 import { CreatePropertyDialog } from "@src/modules/properties/components/CreatePropertyDialog";
 import { EditPropertyDialog } from "@src/modules/properties/components/EditPropertyDialog";
+import { DeletePropertyButton } from "@src/modules/properties/components/DeletePropertyButton";
+import { PropertySearchInput } from "@src/modules/properties/components/PropertySearchInput";
 
 export function PropertiesClient() {
   const { properties, loading, refetch } = useGetProperties();
   const { form, onSubmit, loading: creating } = useCreateProperty(refetch);
   const { onSubmit: onUpdate, loading: updating } = useUpdateProperty(refetch);
+
+  const { query, setQuery, filtered } = usePropertySearch(properties);
 
   return (
     <div>
@@ -22,11 +27,17 @@ export function PropertiesClient() {
         />
       </div>
 
+      <div className="mb-4">
+        <PropertySearchInput query={query} setQuery={setQuery} />
+      </div>
+
       {loading ? (
         <p>Cargando propiedades...</p>
+      ) : filtered.length === 0 ? (
+        <p>No se encontraron propiedades.</p>
       ) : (
         <ul className="space-y-2">
-          {properties.map((prop) => (
+          {filtered.map((prop) => (
             <li
               key={prop.id}
               className="border p-3 rounded flex justify-between items-center"
@@ -34,11 +45,14 @@ export function PropertiesClient() {
               <div>
                 <strong>{prop.title}</strong> - ${prop.price}
               </div>
-              <EditPropertyDialog
-                property={prop}
-                onSubmit={onUpdate}
-                loading={updating}
-              />
+              <div className="flex flex-col md:flex-row px-1 gap-2">
+                <DeletePropertyButton id={prop.id} onDeleted={refetch} />
+                <EditPropertyDialog
+                  property={prop}
+                  onSubmit={onUpdate}
+                  loading={updating}
+                />
+              </div>
             </li>
           ))}
         </ul>
