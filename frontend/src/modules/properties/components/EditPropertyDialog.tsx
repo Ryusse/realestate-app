@@ -15,7 +15,7 @@ import {
 } from "@src/components/ui/alert-dialog";
 
 import { Button } from "@src/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 
 import { PropertyForm } from "./PropertyForm";
 import { UseFormReturn, useForm } from "react-hook-form";
@@ -87,9 +87,18 @@ export function EditPropertyDialog({
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
-            {/* Use regular submit button so Radix doesn't auto-close the dialog */}
             <Button type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Guardar cambios"}
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Guardar cambios
+                </>
+              )}
             </Button>
           </AlertDialogFooter>
         </form>

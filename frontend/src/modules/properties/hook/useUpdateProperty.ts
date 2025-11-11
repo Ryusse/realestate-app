@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createPropertySchema } from "../schemas/property.schema";
+import { wait } from "@src/lib/utils";
 import type { UseFormReturn } from "react-hook-form";
 
 export function useUpdateProperty(onSuccess?: () => void) {
@@ -16,6 +17,7 @@ export function useUpdateProperty(onSuccess?: () => void) {
   ) => {
     setLoading(true);
     try {
+      await wait(10);
       const res = await fetch(`/api/properties/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -27,7 +29,6 @@ export function useUpdateProperty(onSuccess?: () => void) {
         if (res.status === 400) {
           const json = await res.json().catch(() => null);
           if (json && json.details && form) {
-            // zod format: { field: { _errors: [...] }, ... }
             const details = json.details as Record<string, any>;
             const extractMsg = (obj: any): string | null => {
               if (!obj) return null;

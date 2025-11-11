@@ -6,6 +6,7 @@ import { createPropertySchema } from "../schemas/property.schema";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useState } from "react";
+import { wait } from "@src/lib/utils";
 
 export function useCreateProperty(onSuccess?: () => void) {
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ export function useCreateProperty(onSuccess?: () => void) {
   const onSubmit = async (values: z.infer<typeof createPropertySchema>) => {
     setLoading(true);
     try {
+      await wait(3);
       const res = await fetch("/api/properties", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
