@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -13,7 +15,7 @@ import {
 } from "@src/components/ui/alert-dialog";
 
 import { Button } from "@src/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 
 import { PropertyForm } from "./PropertyForm";
 import { UseFormReturn, useForm } from "react-hook-form";
@@ -24,7 +26,8 @@ type EditPropertyDialogProps = {
   property: any;
   onSubmit: (
     id: string,
-    values: z.infer<typeof createPropertySchema>
+    values: z.infer<typeof createPropertySchema>,
+    form?: UseFormReturn<z.infer<typeof createPropertySchema>>
   ) => Promise<void>;
   loading: boolean;
 };
@@ -37,9 +40,28 @@ export function EditPropertyDialog({
   const form = useForm<z.infer<typeof createPropertySchema>>({
     defaultValues: property,
   });
+  // control open state so we can prevent closing while loading
+  const [open, setOpen] = useState(false);
+
+  function handleOpenChange(value: boolean) {
+    // prevent closing while a save is in progress
+    if (!value && loading) return;
+
+    // if closing, reset form to original property values
+    if (!value) {
+      try {
+        form.reset(property);
+        form.clearErrors();
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    setOpen(value);
+  }
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Pencil className="mr-2 h-4 w-4" />
@@ -57,7 +79,7 @@ export function EditPropertyDialog({
 
         <form
           onSubmit={form.handleSubmit((values) =>
-            onSubmit(property.id, values)
+            onSubmit(property.id, values, form)
           )}
           className="space-y-4 mt-4"
         >
@@ -65,9 +87,19 @@ export function EditPropertyDialog({
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Guardar cambios"}
-            </AlertDialogAction>
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Guardar cambios
+                </>
+              )}
+            </Button>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>

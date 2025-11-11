@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -22,7 +24,8 @@ import { z } from "zod";
 
 type CreatePropertyDialogProps = {
   form: UseFormReturn<z.infer<typeof createPropertySchema>>;
-  onSubmit: (values: z.infer<typeof createPropertySchema>) => Promise<void>;
+  // onSubmit should return true on success, false on failure so the dialog can close conditionally
+  onSubmit: (values: z.infer<typeof createPropertySchema>) => Promise<boolean>;
   loading: boolean;
 };
 
@@ -31,8 +34,30 @@ export function CreatePropertyDialog({
   onSubmit,
   loading,
 }: CreatePropertyDialogProps) {
+  // Control the dialog open state so we can reset the form on close
+  const [open, setOpen] = useState(false);
+
+  function handleOpenChange(value: boolean) {
+    // When dialog closes, reset form values and clear validation errors
+    if (!value) {
+      try {
+        form.reset();
+        form.clearErrors();
+      } catch (e) {
+        // ignore
+      }
+    }
+    setOpen(value);
+  }
+
+  // wrap onSubmit so we only close the dialog when the create was successful
+  const handleCreate = async (values: z.infer<typeof createPropertySchema>) => {
+    const ok = await onSubmit(values);
+    if (ok) setOpen(false);
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
@@ -48,12 +73,17 @@ export function CreatePropertyDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form
+          onSubmit={form.handleSubmit(handleCreate)}
+          className="space-y-4 mt-4"
+        >
           <PropertyForm form={form} loading={loading} />
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction type="submit" disabled={loading}>
+            {/* Use a regular submit Button instead of AlertDialogAction so the dialog
+                does not auto-close before form validation / submission completes. */}
+            <Button type="submit" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -65,7 +95,7 @@ export function CreatePropertyDialog({
                   Crear
                 </>
               )}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>
