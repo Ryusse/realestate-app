@@ -15,9 +15,9 @@ import { Trash } from "lucide-react";
 type AlertDialogDeleteClientProp = {
 	handleClick: () => void;
 };
-export default function AlertDialogDeleteClient({
+export const AlertDialogDeleteClient = ({
 	handleClick,
-}: AlertDialogDeleteClientProp) {
+}: AlertDialogDeleteClientProp) => {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>

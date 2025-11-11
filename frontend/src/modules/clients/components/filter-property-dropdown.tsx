@@ -12,10 +12,10 @@ type ColumnFilterDropdownProps = {
   onToggleColumn: (column: FilterOption) => void;
 };
 
-export default function ColumnFilterDropdown({
+export const ColumnFilterDropdown = ({
   visibleColumns,
   onToggleColumn,
-}: ColumnFilterDropdownProps) {
+}: ColumnFilterDropdownProps) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
