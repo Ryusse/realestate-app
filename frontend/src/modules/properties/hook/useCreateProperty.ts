@@ -39,9 +39,13 @@ export function useCreateProperty(onSuccess?: () => void) {
       toast.success("Propiedad guardada correctamente 🏡");
       form.reset();
       onSuccess?.();
+      return true;
     } catch (error) {
       console.error(error);
       toast.error("No se pudo guardar la propiedad");
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 

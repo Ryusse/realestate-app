@@ -24,7 +24,8 @@ import { z } from "zod";
 
 type CreatePropertyDialogProps = {
   form: UseFormReturn<z.infer<typeof createPropertySchema>>;
-  onSubmit: (values: z.infer<typeof createPropertySchema>) => Promise<void>;
+  // onSubmit should return true on success, false on failure so the dialog can close conditionally
+  onSubmit: (values: z.infer<typeof createPropertySchema>) => Promise<boolean>;
   loading: boolean;
 };
 
@@ -49,6 +50,12 @@ export function CreatePropertyDialog({
     setOpen(value);
   }
 
+  // wrap onSubmit so we only close the dialog when the create was successful
+  const handleCreate = async (values: z.infer<typeof createPropertySchema>) => {
+    const ok = await onSubmit(values);
+    if (ok) setOpen(false);
+  };
+
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
@@ -66,7 +73,10 @@ export function CreatePropertyDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form
+          onSubmit={form.handleSubmit(handleCreate)}
+          className="space-y-4 mt-4"
+        >
           <PropertyForm form={form} loading={loading} />
 
           <AlertDialogFooter>
