@@ -9,51 +9,26 @@ import {
   TableHeader,
   TableRow,
 } from "@src/components/ui/table";
-import ColumnFilterDropdown, { FilterOption } from "./filter/page";
-import CreateClient from "../clients/create/page";
-import AlertDialogDeleteClient from "./delete/page";
-import EditClientModal from "./edit/page";
-
-type Client = {
-  id: number;
-  name: string;
-  email: string;
-  number: string;
-};
+import { EditClientModal, AlertDialogDeleteClient, CreateClient, ColumnFilterDropdown, FilterOption } from "@src/modules/clients/components";
+import { type Client, type ClientData} from "@src/types/client"
 
 export default function DataTableClient() {
   let nextId = 0;
-  const [client, setClient] = useState({
-    name: "",
-    email: "",
-    number: "",
-  });
   const [clients, setClients] = useState<Client[]>([]);
   const [visibleColumns, setVisibleColumns] = useState({
     name: true,
     email: true,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setClient({
-      ...client,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleAddClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    setClients([
-      ...clients,
-      {
-        id: ++nextId,
-        name: client.name,
-        email: client.email,
-        number: client.number,
-      },
-    ]);
-    setClient({ name: "", email: "", number: "" });
-  };
+  const handleCreateClient = (clientData: ClientData) => {
+    const newClient: Client = {
+      id: ++nextId,
+      name: clientData.name,
+      email: clientData.email,
+      number: clientData.number,
+    }
+    setClients([...clients, newClient]);
+  }
 
   const handleDeleteClient = (currentClient: Client) => {
     setClients(clients.filter((c) => c.id !== currentClient.id));
@@ -74,11 +49,9 @@ export default function DataTableClient() {
 
   return (
     <>
-		<div className="flex justify-between max-w-4xl mx-auto mt-2">
+		<div className="flex justify-between items-center mt-2">
         <CreateClient
-          client={client}
-          handleChange={handleChange}
-          handleAddClick={handleAddClick}
+        onSubmit={handleCreateClient}
         />
       
         <ColumnFilterDropdown 
@@ -88,7 +61,7 @@ export default function DataTableClient() {
 			</div>
 
       {/* Tabla */}
-      <div className="overflow-hidden rounded-md border max-w-4xl mx-auto mt-2">
+      <div className="overflow-hidden rounded-md border mt-2">
         <Table>
           <TableHeader>
             <TableRow>
