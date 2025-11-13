@@ -15,18 +15,19 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@src/components/ui/sidebar";
-import { paths } from "@src/lib/paths";
-import { verifySession } from "@src/modules/auth/lib/dal";
+import useSupabaseServer from "@src/lib/utils/supabase-server";
 
 export default async function AdminLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	const { isAuth } = await verifySession();
+	const supabase = await useSupabaseServer();
 
-	if (!isAuth) {
-		redirect(paths.auth.login());
+	const { data, error } = await supabase.auth.getClaims();
+
+	if (error || !data?.claims) {
+		redirect("/login");
 	}
 
 	return (

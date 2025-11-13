@@ -16,10 +16,10 @@ import {
 import { Input } from "@src/components/ui/input";
 import { Spinner } from "@src/components/ui/spinner";
 import { paths } from "@src/lib/paths";
+import useSupabaseBrowser from "@src/lib/utils/supabase-browser";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { loginAction } from "../actions/auth.actions";
 import { type LoginFormData, loginSchema } from "../schemas/login";
 
 type LoginFormProps = {
@@ -32,7 +32,6 @@ type LoginFormProps = {
 export default function LoginForm({
 	heading = "RedProp",
 	buttonText = "Iniciar Sesión",
-	onSubmit,
 	redirectTo,
 }: LoginFormProps) {
 	const form = useForm<LoginFormData>({
@@ -44,29 +43,30 @@ export default function LoginForm({
 	});
 
 	const router = useRouter();
+	const supabase = useSupabaseBrowser();
 
 	const handleSubmit = async (data: LoginFormData) => {
+		const { email, password } = data;
+
 		try {
-			if (onSubmit) {
-				await onSubmit(data);
-			} else {
-				const result = await loginAction(data);
+			const { error, data: authData } = await supabase.auth.signInWithPassword({
+				email,
+				password,
+			});
 
-				if (result.success) {
-					toast.success(result.message);
+			if (error) {
+				toast.error(error.message);
+				return;
+			}
 
-					const redirect = redirectTo || paths.dashboard();
-					router.push(redirect);
-					router.refresh();
-				} else {
-					toast.error(result.message || "Error al iniciar sesión");
-				}
+			if (authData.session) {
+				toast.success("Sesión iniciada correctamente");
+				const redirect = redirectTo || paths.dashboard();
+				router.push(redirect);
 			}
 		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Error al iniciar sesión";
-			toast.error(errorMessage);
-			console.error("Login error:", error);
+			console.log(error instanceof Error ? error.message : "An error occurred");
+			toast.error("Error al iniciar sesión");
 		}
 	};
 

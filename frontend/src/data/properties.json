@@ -18,5 +18,15 @@
     "city": "Buenos Aires",
     "beds": 2,
     "baths": 1
+  },
+  {
+    "id": "f66a8efa-cd48-4e56-814a-b8f2df5afda5",
+    "title": "tes",
+    "description": "w1",
+    "price": 222,
+    "address": "Av Paz 1424",
+    "city": "Lima",
+    "beds": 0,
+    "baths": 222
   }
 ]

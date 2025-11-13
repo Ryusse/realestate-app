@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
 	Sidebar,
 	SidebarContent,
-	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarGroupLabel,
@@ -16,6 +15,7 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@src/components/ui/sidebar";
+import { LogoutButton } from "@src/modules/auth/components/logout-button";
 import { Home } from "lucide-react";
 
 import { navigation } from "./data";
@@ -72,20 +72,20 @@ export function AppSidebar() {
 						</SidebarGroupContent>
 					</SidebarGroup>
 				))}
+				<SidebarGroup>
+					<LogoutButton />
+				</SidebarGroup>
 			</SidebarContent>
 
-			<SidebarFooter>
+			{/* <SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild>
-							<Link href="/">
-								<Home />
-								<span>Ir al sitio público</span>
-							</Link>
+							<LogoutButton />
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
-			</SidebarFooter>
+			</SidebarFooter> */}
 
 			<SidebarRail />
 		</Sidebar>

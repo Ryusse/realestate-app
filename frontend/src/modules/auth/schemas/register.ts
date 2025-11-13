@@ -17,13 +17,13 @@ export const registerSchema = z.object({
 		.string()
 		.min(1, "El apellido es requerido")
 		.min(2, "El apellido debe tener al menos 2 caracteres"),
-	role: z
-		.string()
-		.min(1, "Debes seleccionar un tipo de cuenta")
-		.refine(
-			(val) => val === "AGENT" || val === "ADMIN",
-			"Selecciona si eres agente o propietario",
-		),
+	// role: z
+	// 	.string()
+	// 	.min(1, "Debes seleccionar un tipo de cuenta")
+	// 	.refine(
+	// 		(val) => val === "AGENT" || val === "ADMIN",
+	// 		"Selecciona si eres agente o propietario",
+	// 	),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

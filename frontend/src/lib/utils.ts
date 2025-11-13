@@ -8,3 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export async function wait(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export const hasEnvVars =
+	process.env.NEXT_PUBLIC_SUPABASE_URL &&
+	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@src/components/ui/button";
-import { ButtonGroup } from "@src/components/ui/button-group";
 import {
 	Form,
 	FormControl,
@@ -17,10 +16,10 @@ import {
 import { Input } from "@src/components/ui/input";
 import { Spinner } from "@src/components/ui/spinner";
 import { paths } from "@src/lib/paths";
+import useSupabaseBrowser from "@src/lib/utils/supabase-browser";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { registerAction } from "../actions/auth.actions";
 import { type RegisterFormData, registerSchema } from "../schemas/register";
 
 type RegisterFormProps = {
@@ -33,7 +32,6 @@ type RegisterFormProps = {
 export default function RegisterForm({
 	heading = "RedProp",
 	buttonText = "Registrarse",
-	onSubmit,
 	redirectTo,
 }: RegisterFormProps) {
 	const form = useForm<RegisterFormData>({
@@ -43,33 +41,41 @@ export default function RegisterForm({
 			password: "",
 			firstName: "",
 			lastName: "",
-			role: "",
 		},
 	});
 
 	const router = useRouter();
+	const supabase = useSupabaseBrowser();
 
 	const handleSubmit = async (data: RegisterFormData) => {
-		try {
-			if (onSubmit) {
-				await onSubmit(data);
-			} else {
-				const result = await registerAction(data);
+		const { email, password, firstName, lastName } = data;
 
-				if (result.success) {
-					toast.success(result.message);
-					const redirect = redirectTo || paths.dashboard();
-					router.push(redirect);
-					router.refresh();
-				} else {
-					toast.error(result.message || "Error al crear la cuenta");
-				}
+		try {
+			const { error, data } = await supabase.auth.signUp({
+				email,
+				password,
+				options: {
+					emailRedirectTo: `${window.location.origin}/admin`,
+					data: {
+						first_name: firstName,
+						last_name: lastName,
+					},
+				},
+			});
+			if (error) throw error;
+
+			if (data.user?.aud === "authenticated") {
+				toast.error("El correo ya esta registrado");
+
+				throw new Error("User already exists");
 			}
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Error al crear la cuenta";
-			toast.error(errorMessage);
-			console.error("Register error:", error);
+
+			toast.success("Registrado correctamente");
+
+			const redirect = redirectTo || paths.dashboard();
+			router.push(redirect);
+		} catch (error: unknown) {
+			console.log(error instanceof Error ? error.message : "An error occurred");
 		}
 	};
 
@@ -160,7 +166,7 @@ export default function RegisterForm({
 						)}
 					/>
 
-					<FormField
+					{/* <FormField
 						control={form.control}
 						name="role"
 						render={({ field }) => (
@@ -189,7 +195,7 @@ export default function RegisterForm({
 								<FormMessage />
 							</FormItem>
 						)}
-					/>
+					/> */}
 
 					<Button
 						type="submit"
