@@ -4,6 +4,8 @@ import "./globals.css";
 
 import { Toaster } from "@src/components/ui/sonner";
 
+import { ReactQueryClientProvider } from "./provider";
+
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
@@ -25,13 +27,15 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="es">
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				{children}
-				<Toaster />
-			</body>
-		</html>
+		<ReactQueryClientProvider>
+			<html lang="es">
+				<body
+					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				>
+					{children}
+					<Toaster />
+				</body>
+			</html>
+		</ReactQueryClientProvider>
 	);
 }
