@@ -85,8 +85,8 @@ describe("createPropertySchema", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.price).toBe(150000); // número
-        expect(result.data.beds).toBe(0); // número
-        expect(result.data.baths).toBe(1); // número
+        expect(result.data.beds).toBe(0);
+        expect(result.data.baths).toBe(1);
       }
     });
   });
