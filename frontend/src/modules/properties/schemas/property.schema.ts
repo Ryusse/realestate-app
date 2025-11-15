@@ -11,3 +11,9 @@ export const createPropertySchema = z.object({
 });
 
 export type CreatePropertyDto = z.infer<typeof createPropertySchema>;
+
+export const propertySchema = createPropertySchema.extend({
+	id: z.string(),
+});
+
+export type Property = z.infer<typeof propertySchema>;

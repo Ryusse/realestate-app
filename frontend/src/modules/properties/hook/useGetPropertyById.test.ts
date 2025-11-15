@@ -27,7 +27,7 @@ describe("useGetPropertyById", () => {
 
 		vi.mocked(fetch).mockResolvedValueOnce({
 			json: vi.fn().mockResolvedValueOnce(mockProperty),
-		} as any);
+		} as unknown as Response);
 
 		const { result } = renderHook(() => useGetPropertyById("1"));
 
@@ -79,10 +79,10 @@ describe("useGetPropertyById", () => {
 		vi.mocked(fetch)
 			.mockResolvedValueOnce({
 				json: vi.fn().mockResolvedValueOnce(mockProperty1),
-			} as any)
+			} as unknown as Response)
 			.mockResolvedValueOnce({
 				json: vi.fn().mockResolvedValueOnce(mockProperty2),
-			} as any);
+			} as unknown as Response);
 
 		const { result, rerender } = renderHook(
 			({ id }) => useGetPropertyById(id),

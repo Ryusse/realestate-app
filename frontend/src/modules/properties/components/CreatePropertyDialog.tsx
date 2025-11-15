@@ -41,7 +41,7 @@ export function CreatePropertyDialog({
 			try {
 				form.reset();
 				form.clearErrors();
-			} catch (e) {
+			} catch {
 				// ignore
 			}
 		}

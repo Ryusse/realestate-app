@@ -17,11 +17,14 @@ import { Loader2, Pencil } from "lucide-react";
 import { type UseFormReturn, useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import type { createPropertySchema } from "../schemas/property.schema";
+import type {
+	createPropertySchema,
+	Property,
+} from "../schemas/property.schema";
 import { PropertyForm } from "./PropertyForm";
 
 type EditPropertyDialogProps = {
-	property: any;
+	property: Property;
 	onSubmit: (
 		id: string,
 		values: z.infer<typeof createPropertySchema>,
@@ -50,7 +53,7 @@ export function EditPropertyDialog({
 			try {
 				form.reset(property);
 				form.clearErrors();
-			} catch (e) {
+			} catch {
 				// ignore
 			}
 		}

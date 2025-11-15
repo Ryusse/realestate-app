@@ -30,15 +30,16 @@ export function useUpdateProperty(onSuccess?: () => void) {
 				// try to parse validation details from the API
 				if (res.status === 400) {
 					const json = await res.json().catch(() => null);
-					if (json && json.details && form) {
-						const details = json.details as Record<string, any>;
-						const extractMsg = (obj: any): string | null => {
-							if (!obj) return null;
-							if (Array.isArray(obj._errors) && obj._errors.length > 0)
-								return String(obj._errors[0]);
+					if (json?.details && form) {
+						const details = json.details as Record<string, unknown>;
+						const extractMsg = (obj: unknown): string | null => {
+							if (!obj || typeof obj !== "object") return null;
+							const record = obj as Record<string, unknown>;
+							if (Array.isArray(record._errors) && record._errors.length > 0)
+								return String(record._errors[0]);
 							// nested object
-							for (const key of Object.keys(obj)) {
-								const v = extractMsg(obj[key]);
+							for (const key of Object.keys(record)) {
+								const v = extractMsg(record[key]);
 								if (v) return v;
 							}
 							return null;
@@ -48,9 +49,18 @@ export function useUpdateProperty(onSuccess?: () => void) {
 							const msg = extractMsg(value);
 							if (msg) {
 								try {
-									form.setError(field as any, { type: "server", message: msg });
-								} catch (e) {
-									console.error(e);
+									form.setError(
+										field as
+											| "title"
+											| "description"
+											| "price"
+											| "address"
+											| "city"
+											| "beds"
+											| "baths",
+										{ type: "server", message: msg },
+									);
+								} catch {
 									// ignore if setError fails for some fields
 								}
 							}

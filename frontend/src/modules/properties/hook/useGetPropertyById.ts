@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+import type { Property } from "../schemas/property.schema";
+
 export function useGetPropertyById(id?: string) {
-	const [property, setProperty] = useState<any>(null);
+	const [property, setProperty] = useState<Property | null>(null);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {

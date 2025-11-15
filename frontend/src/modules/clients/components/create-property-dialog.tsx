@@ -134,7 +134,7 @@ export const CreateClient = ({
 												className="text-sm"
 												{...field}
 												onChange={(e) =>
-													field.onChange(parseInt(e.target.value) || 60)
+													field.onChange(parseInt(e.target.value, 10) || 60)
 												}
 											/>
 										</FormControl>

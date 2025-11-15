@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { createPropertySchema } from "@src/modules/properties/schemas/property.schema";
-import fs from "fs";
-import path from "path";
+import {
+	createPropertySchema,
+	type Property,
+} from "@src/modules/properties/schemas/property.schema";
+
+import fs from "node:fs";
+import path from "node:path";
 
 const filePath = path.join(process.cwd(), "src/data/properties.json");
 
@@ -13,8 +17,8 @@ export async function GET(
 	const { id } = await params;
 	try {
 		const fileData = fs.readFileSync(filePath, "utf-8");
-		const properties = JSON.parse(fileData);
-		const property = properties.find((p: any) => p.id === id);
+		const properties = JSON.parse(fileData) as Property[];
+		const property = properties.find((p) => p.id === id);
 		if (!property) {
 			return NextResponse.json(
 				{ message: "Propiedad no encontrada" },
@@ -40,8 +44,8 @@ export async function PUT(
 	const body = await req.json();
 
 	try {
-		const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-		const index = data.findIndex((p: any) => p.id === id);
+		const data = JSON.parse(fs.readFileSync(filePath, "utf8")) as Property[];
+		const index = data.findIndex((p) => p.id === id);
 
 		if (index === -1) {
 			return NextResponse.json(
@@ -82,8 +86,8 @@ export async function DELETE(
 	const { id } = await params;
 	try {
 		const fileData = fs.readFileSync(filePath, "utf-8");
-		const properties = JSON.parse(fileData);
-		const updated = properties.filter((p: any) => p.id !== id);
+		const properties = JSON.parse(fileData) as Property[];
+		const updated = properties.filter((p) => p.id !== id);
 		fs.writeFileSync(filePath, JSON.stringify(updated, null, 2));
 		return NextResponse.json({ message: "Property deleted" });
 	} catch (error) {
