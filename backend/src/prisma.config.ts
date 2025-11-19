@@ -1,5 +1,5 @@
-import 'dotenv/config';
 import { defineConfig, env } from "prisma/config";
+import 'dotenv/config'; // <--- ¡Esta línea fuerza la carga de .env!
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
